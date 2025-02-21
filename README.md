@@ -33,3 +33,16 @@ Arduino IDE
   - WebSocketsServer (Library Manager → Search "WebSocketsServer" → Install)
   - ArduinoJson (Library Manager → Search "ArduinoJson" → Install)
   - LittleFS for ESP32 (Library Manager → Search "LittleFS_ESP32")
+
+## How to Setup
+### 1️⃣ Flash the ESP32 Code
+1. Open Arduino IDE.
+2. Install required libraries (see above).
+3. Open esp32_thermostat.ino.
+4. Modify WiFi & MQTT details:
+```cpp
+const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASSWORD";
+const char* mqtt_server = "YOUR_MQTT_BROKER_IP";
+```
+5. Connect ESP32 and Upload the Code.
