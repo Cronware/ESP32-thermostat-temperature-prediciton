@@ -1,6 +1,8 @@
 # ESP32 Thermostat - Real-Time MQTT-Based Web Thermostat
 🚀 An IoT thermostat using ESP32, WebSockets, and MQTT for real-time temperature control and monitoring.
 
+![image](https://github.com/user-attachments/assets/3c4af350-2546-450d-89d7-016c6a41818f)
+
 ## Features
 - ✅ Web-based Thermostat (Adjust temperature from a browser)
 - ✅ Real-time Updates using WebSockets
@@ -46,3 +48,34 @@ const char* password = "YOUR_WIFI_PASSWORD";
 const char* mqtt_server = "YOUR_MQTT_BROKER_IP";
 ```
 5. Connect ESP32 and Upload the Code.
+
+### 2️⃣ Upload index.html to ESP32 (LittleFS)
+1. Install the ESP32 LittleFS Plugin:
+   - Download the plugin: ESP32 LittleFS Plugin
+   - Copy it to Arduino/tools/ESP32FS/tool/
+2. In Arduino IDE:
+   - Go to Tools → ESP32 Sketch Data Upload.
+   - It will upload index.html to ESP32.
+
+### 3️⃣ Set Up MQTT Broker
+- If using Mosquitto MQTT on Raspberry Pi/PC, install it:
+```bash
+sudo apt install mosquitto mosquitto-clients
+```
+- Start the broker:
+```bash
+sudo systemctl start mosquitto
+```
+- Subscribe to MQTT topics to test:
+```bash
+mosquitto_sub -h YOUR_MQTT_BROKER_IP -t "thermostat/#" -v
+```
+
+### 4️⃣ Access the Thermostat Dashboard
+1. Open Serial Monitor (115200 baud).
+2. Get the ESP32 IP Address.
+3. Open a browser and go to:
+```cpp
+http://ESP32_IP/
+```
+4. Adjust the Set Temperature and see real-time updates.
