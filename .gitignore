@@ -1,0 +1,16 @@
+# Ignore compiled binaries
+*.bin
+*.elf
+*.hex
+*.pyc
+*.DS_Store
+
+# Ignore build and cache folders
+build/
+.vscode/
+.pioenvs/
+.cache/
+.idea/
+
+# Ignore Arduino-specific files
+.arduino15/

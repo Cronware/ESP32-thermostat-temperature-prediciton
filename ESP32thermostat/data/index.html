@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Thermostat</title>
+    <script>
+        let socket;
+
+        function connectWebSocket() {
+            socket = new WebSocket("ws://" + location.hostname + ":81/");
+
+            socket.onopen = function () {
+                console.log("WebSocket Connected");
+            };
+
+            socket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+
+                document.getElementById("currentTemp").value = data.temperature + " °C";
+                document.getElementById("humidity").value = data.humidity + " %";
+
+                if (data.estimated_time !== "--") {
+                    document.getElementById("estimatedTime").value = formatFutureTime(parseInt(data.estimated_time));
+                }
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket Disconnected. Reconnecting...");
+                setTimeout(connectWebSocket, 2000);
+            };
+        }
+
+        function sendSetpoint() {
+            let setpoint = document.getElementById("setpoint").value;
+            console.log("Sending Setpoint via WebSocket:", setpoint);
+            socket.send(JSON.stringify({ setpoint: parseFloat(setpoint) }));
+        }
+
+        function formatFutureTime(seconds) {
+            let now = new Date();
+            now.setSeconds(now.getSeconds() + seconds); // Add estimated time in seconds
+            now.setHours(now.getHours() + 2); // Adjust for Bucharest Time (UTC+2)
+
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+
+            return `${hours}:${minutes}`; // Returns formatted time (HH:MM)
+        }
+
+        window.onload = function () {
+            connectWebSocket();
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 90%;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>ESP32 Thermostat</h2>
+
+        <div class="input-group">
+            <span class="label">Set Temperature (°C)</span>
+            <input type="number" id="setpoint" value="24" min="15" max="30" step="0.5">
+            <button onclick="sendSetpoint()">Set</button>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Current Temperature</span>
+            <input type="text" id="currentTemp" value="--" disabled>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Humidity</span>
+            <input type="text" id="humidity" value="--" disabled>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Estimated Time (HH:MM)</span>
+            <input type="text" id="estimatedTime" value="--" disabled>
+        </div>
+    </div>
+</body>
+
+</html>
